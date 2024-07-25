@@ -47,9 +47,10 @@ document.addEventListener("click", (e) => {
     addTodo();
   } else if (e.target.classList == "delete-btn") {
     console.log(1);
-    deleteTodo(e.target.parent.id);
+    deleteTodo(e.target.parentNode.id); // id도 텍스트로 저장되어야 함
   } else if (e.target.classList == "edit-btn") {
     console.log(2);
+    editTodo(e.target.parentNode.id);
   } else if (e.target.classList == "check-box") {
     console.log(3);
   }
@@ -70,5 +71,17 @@ const addTodo = () => {
 const deleteTodo = (id) => {
   fetch(`${url}/${id}`, {
     method: "DELETE",
+  });
+};
+
+// DB 데이터 수정하는 함수
+const editTodo = (id) => {
+  const newText = prompt("수정할 내용을 입력하세요");
+  fetch(`${url}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "Application/json",
+    },
+    body: JSON.stringify({ todo: `${newText}` }),
   });
 };
