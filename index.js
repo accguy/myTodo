@@ -48,6 +48,7 @@ document.addEventListener("click", (e) => {
   const targetClassList = e.target.classList;
 
   if (targetClassList == "submit-btn") {
+    e.stopPropagation();
     createTodo();
   } else if (targetClassList == "delete-btn") {
     removeTodo(parentId);
@@ -60,14 +61,28 @@ document.addEventListener("click", (e) => {
 });
 
 // DB에 데이터 추가하는 함수
-const createTodo = () => {
-  fetch(url, {
-    method: "POST",
-    header: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ todo: `${$input.value}`, done: false }),
-  });
+const createTodo = async () => {
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      header: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ todo: `${$input.value}`, done: false }),
+    });
+
+    //
+    if (!res.ok) {
+      throw new Error("Failed to post data");
+    }
+
+    const newTodo = res.json();
+    renderItem(newTodo);
+  } catch (error) {
+    console.log(error);
+    alert("데이터 추가에 실패하였습니다.");
+    $input.value = "";
+  }
 };
 
 // DB에서 데이터 삭제하는 함수
