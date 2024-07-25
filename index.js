@@ -3,7 +3,8 @@ const $input = document.querySelector("input");
 const $submitBtn = document.querySelector(".submit-btn");
 
 // 받아온 데이터 화면에 렌더링하기
-const renderItems = (item) => {
+// 아이템 1개의 데이터를 li 생성해서 ul에 추가하는 함수
+const renderItem = (item) => {
   // 요소 생성
   const $li = document.createElement("li");
   const $deleteBtn = document.createElement("button");
@@ -20,6 +21,7 @@ const renderItems = (item) => {
   $deleteBtn.innerText = "삭제";
   $editBtn.innerText = "수정";
   $checkbox.type = "checkbox";
+  $checkbox.checked = item.done;
 
   $li.append($checkbox, $editBtn, $deleteBtn);
   $ul.appendChild($li);
@@ -28,13 +30,13 @@ const renderItems = (item) => {
 const url = "http://localhost:3000/todoList";
 
 // 서버에 있는 데이터 요청하기
-const getDataAndRender = async () => {
+const fetchAndRenderTodos = async () => {
   const res = await fetch(url);
   const todoList = await res.json();
   console.log(todoList);
-  todoList.forEach(renderItems);
+  todoList.forEach(renderItem);
 };
-getDataAndRender();
+fetchAndRenderTodos();
 
 // 인풋에 값을 입력하고 제출 버튼을 누르면
 // 리스트에 새로운 항목 생성됨
@@ -42,22 +44,23 @@ getDataAndRender();
 
 // 이벤트 리스너
 document.addEventListener("click", (e) => {
-  if (e.target.classList == "submit-btn") {
-    console.log(0);
-    addTodo();
-  } else if (e.target.classList == "delete-btn") {
-    console.log(1);
-    deleteTodo(e.target.parentNode.id); // id도 텍스트로 저장되어야 함
-  } else if (e.target.classList == "edit-btn") {
-    console.log(2);
-    editTodo(e.target.parentNode.id);
-  } else if (e.target.classList == "check-box") {
-    console.log(3);
+  const parentId = e.target.parentNode.id;
+  const targetClassList = e.target.classList;
+
+  if (targetClassList == "submit-btn") {
+    createTodo();
+  } else if (targetClassList == "delete-btn") {
+    removeTodo(parentId);
+  } else if (targetClassList == "edit-btn") {
+    updateTodo(parentId);
+  } else if (targetClassList == "check-box") {
+    const isChecked = e.target.checked;
+    updateTodoStatus(parentId, isChecked);
   }
 });
 
 // DB에 데이터 추가하는 함수
-const addTodo = () => {
+const createTodo = () => {
   fetch(url, {
     method: "POST",
     header: {
@@ -68,14 +71,14 @@ const addTodo = () => {
 };
 
 // DB에서 데이터 삭제하는 함수
-const deleteTodo = (id) => {
+const removeTodo = (id) => {
   fetch(`${url}/${id}`, {
     method: "DELETE",
   });
 };
 
 // DB 데이터 수정하는 함수
-const editTodo = (id) => {
+const updateTodo = (id) => {
   const newText = prompt("수정할 내용을 입력하세요");
   fetch(`${url}/${id}`, {
     method: "PATCH",
@@ -83,5 +86,16 @@ const editTodo = (id) => {
       "Content-Type": "Application/json",
     },
     body: JSON.stringify({ todo: `${newText}` }),
+  });
+};
+
+// DB 체크여부 수정하는 함수
+const updateTodoStatus = (id, isChecked) => {
+  fetch(`${url}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "Application/json",
+    },
+    body: JSON.stringify({ done: isChecked }),
   });
 };
