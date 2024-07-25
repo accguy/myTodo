@@ -2,9 +2,7 @@ const $ul = document.querySelector("ul");
 const $input = document.querySelector("input");
 const $submitBtn = document.querySelector(".submit-btn");
 
-// 서버에 있는 데이터 요청하기
 // 받아온 데이터 화면에 렌더링하기
-
 const renderItems = (item) => {
   // 요소 생성
   const $li = document.createElement("li");
@@ -15,6 +13,8 @@ const renderItems = (item) => {
   $deleteBtn.classList.add("delete-btn");
   $editBtn.classList.add("edit-btn");
   $checkbox.classList.add("check-box");
+  // $li에 아이디 부여
+  $li.id = item.id;
 
   $li.innerText = item.todo;
   $deleteBtn.innerText = "삭제";
@@ -26,6 +26,8 @@ const renderItems = (item) => {
 };
 
 const url = "http://localhost:3000/todoList";
+
+// 서버에 있는 데이터 요청하기
 const getDataAndRender = async () => {
   const res = await fetch(url);
   const todoList = await res.json();
@@ -38,14 +40,14 @@ getDataAndRender();
 // 리스트에 새로운 항목 생성됨
 // DB에 새로운 아이템 추가 요청 post
 
-// 이벤트 리스너는 이벤트 위임으로 하자
-//
+// 이벤트 리스너
 document.addEventListener("click", (e) => {
   if (e.target.classList == "submit-btn") {
     console.log(0);
     addTodo();
   } else if (e.target.classList == "delete-btn") {
     console.log(1);
+    deleteTodo(e.target.parent.id);
   } else if (e.target.classList == "edit-btn") {
     console.log(2);
   } else if (e.target.classList == "check-box") {
@@ -65,3 +67,8 @@ const addTodo = () => {
 };
 
 // DB에서 데이터 삭제하는 함수
+const deleteTodo = (id) => {
+  fetch(`${url}/${id}`, {
+    method: "DELETE",
+  });
+};
