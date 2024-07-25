@@ -60,6 +60,8 @@ const addTodo = () => {
     header: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ todo: "놀기", done: false }),
+    body: JSON.stringify({ todo: `${$input.value}`, done: false }),
   });
 };
+
+// DB에서 데이터 삭제하는 함수
