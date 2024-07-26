@@ -1,9 +1,10 @@
 const $ul = document.querySelector("ul");
 const $input = document.querySelector("input");
 const $submitBtn = document.querySelector(".submit-btn");
+const url = "http://localhost:3000/todoList";
 
 // 받아온 데이터 화면에 렌더링하기
-// 아이템 1개의 데이터를 li 생성해서 ul에 추가하는 함수
+// 아이템 1개의 li를 생성해서 ul에 추가하는 함수
 const renderItem = (item) => {
   // 요소 생성
   const $li = document.createElement("li");
@@ -27,8 +28,6 @@ const renderItem = (item) => {
   $ul.appendChild($li);
 };
 
-const url = "http://localhost:3000/todoList";
-
 // 서버에 있는 데이터 요청하기
 const fetchAndRenderTodos = async () => {
   const res = await fetch(url);
@@ -37,10 +36,6 @@ const fetchAndRenderTodos = async () => {
   todoList.forEach(renderItem);
 };
 fetchAndRenderTodos();
-
-// 인풋에 값을 입력하고 제출 버튼을 누르면
-// 리스트에 새로운 항목 생성됨
-// DB에 새로운 아이템 추가 요청 post
 
 // 이벤트 리스너
 document.addEventListener("click", (e) => {
@@ -71,7 +66,6 @@ const createTodo = async () => {
       body: JSON.stringify({ todo: `${$input.value}`, done: false }),
     });
 
-    //
     if (!res.ok) {
       throw new Error("Failed to post data");
     }
@@ -95,7 +89,16 @@ const removeTodo = async (id) => {
     if (!res.ok) {
       throw new Error("Failed to remove data");
     }
-    const deletedTodo = await res.json();
+
+    let deletedTodo;
+    // res.json()도 예외처리를 해주는게 맞는건가?
+    try {
+      deletedTodo = await res.json(); // 응답이 JSON 형식인지 확인한 후에 파싱합니다.
+    } catch (error) {
+      throw new Error("Failed to parse response as JSON");
+    }
+
+    // DOM에서 요소 제거
     const $li = document.getElementById(deletedTodo.id);
     $li.remove();
   } catch (error) {
