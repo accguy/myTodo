@@ -11,6 +11,8 @@ const renderItem = (item) => {
   const $deleteBtn = document.createElement("button");
   const $editBtn = document.createElement("button");
   const $checkbox = document.createElement("input");
+  const $innerText = document.createElement("span");
+
   // 요소에 클래스 추가
   $deleteBtn.classList.add("delete-btn");
   $editBtn.classList.add("edit-btn");
@@ -18,13 +20,13 @@ const renderItem = (item) => {
   // $li에 아이디 부여
   $li.id = item.id;
 
-  $li.innerText = item.todo;
+  $innerText.innerText = item.todo;
   $deleteBtn.innerText = "삭제";
   $editBtn.innerText = "수정";
   $checkbox.type = "checkbox";
   $checkbox.checked = item.done;
 
-  $li.append($checkbox, $editBtn, $deleteBtn);
+  $li.append($checkbox, $innerText, $editBtn, $deleteBtn);
   $ul.appendChild($li);
 };
 
@@ -125,7 +127,8 @@ const updateTodo = async (id) => {
   const updatedTodo = await res.json();
   console.log(updatedTodo);
   const $li = document.getElementById(updatedTodo.id);
-  // $li.innerText = updatedTodo.todo;
+  const todoText = $li.querySelector("span");
+  todoText.innerText = updatedTodo.todo;
 };
 
 // DB 체크여부 수정하는 함수
