@@ -108,15 +108,24 @@ const removeTodo = async (id) => {
 };
 
 // DB 데이터 수정하는 함수
-const updateTodo = (id) => {
+const updateTodo = async (id) => {
   const newText = prompt("수정할 내용을 입력하세요");
-  fetch(`${url}/${id}`, {
+  const res = await fetch(`${url}/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "Application/json",
     },
     body: JSON.stringify({ todo: `${newText}` }),
   });
+
+  if (!res.ok) {
+    throw new Error("Failed to update data");
+  }
+
+  const updatedTodo = await res.json();
+  console.log(updatedTodo);
+  const $li = document.getElementById(updatedTodo.id);
+  // $li.innerText = updatedTodo.todo;
 };
 
 // DB 체크여부 수정하는 함수
