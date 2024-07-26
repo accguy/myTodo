@@ -78,6 +78,7 @@ const createTodo = async () => {
 
     const newTodo = await res.json();
     renderItem(newTodo);
+    $input.value = "";
   } catch (error) {
     console.log(error);
     alert("데이터 추가에 실패하였습니다.");
