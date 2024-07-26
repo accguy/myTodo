@@ -76,7 +76,7 @@ const createTodo = async () => {
       throw new Error("Failed to post data");
     }
 
-    const newTodo = res.json();
+    const newTodo = await res.json();
     renderItem(newTodo);
   } catch (error) {
     console.log(error);
