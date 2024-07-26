@@ -87,10 +87,21 @@ const createTodo = async () => {
 };
 
 // DB에서 데이터 삭제하는 함수
-const removeTodo = (id) => {
-  fetch(`${url}/${id}`, {
-    method: "DELETE",
-  });
+const removeTodo = async (id) => {
+  try {
+    const res = await fetch(`${url}/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      throw new Error("Failed to remove data");
+    }
+    const deletedTodo = await res.json();
+    const $li = document.getElementById(deletedTodo.id);
+    $li.remove();
+  } catch (error) {
+    console.log(error);
+    alert("데이터 삭제에 실패하였습니다.");
+  }
 };
 
 // DB 데이터 수정하는 함수
